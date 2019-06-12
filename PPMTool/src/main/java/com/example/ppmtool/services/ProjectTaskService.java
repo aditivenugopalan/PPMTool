@@ -1,6 +1,6 @@
 package com.example.ppmtool.services;
 
-import java.util.List;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +25,12 @@ public class ProjectTaskService {
 	@Autowired
 	private ProjectRepository projectRepository;
 	
-	public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) {
-		//Exceptions: creating tasks for project that does not exist
-		try
-		{
+	@Autowired
+	private ProjectService projectService;
+	
+	public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask, String username) {
 			//Add PTs to specific project, project exists and thus backlog exists
-			Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
+			Backlog backlog = projectService.findProjectByIdentifier(projectIdentifier, username).getBacklog();// backlogRepository.findByProjectIdentifier(projectIdentifier);
 			//Set BL to PT
 			projectTask.setBacklog(backlog);
 			//Proj seq like IDPRO-1 IDPRO-2
@@ -43,7 +43,7 @@ public class ProjectTaskService {
 			projectTask.setProjectIdentifier(projectIdentifier);
 			
 			//Initial priority and status when they are null
-			if(projectTask.getPriority()==0||projectTask.getPriority()==null)
+			if(projectTask.getPriority()==null||projectTask.getPriority()==0)
 			{
 				projectTask.setPriority(3);
 			}
@@ -51,40 +51,29 @@ public class ProjectTaskService {
 			{
 				projectTask.setStatus("TO_DO");
 			}
-		}
-		catch(Exception e)
-		{
-			throw new ProjectNotFoundException("Project not found");
-		}
 		
 		return projectTaskRepository.save(projectTask);
 	}
 	
-	public Iterable<ProjectTask>findBacklogById(String id){
+	public Iterable<ProjectTask>findBacklogById(String id, String username){
 		
-		Project project = projectRepository.findByProjectIdentifier(id);
-		if(project==null)
-		{
-			throw new ProjectNotFoundException("Project with id "+id+" does not exist");
-		}
+		projectService.findProjectByIdentifier(id,username);
 		return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
 	}
 	
-	public ProjectTask findPTByProjectSequence(String backlog_id, String pt_id)
+	public ProjectTask findPTByProjectSequence(String backlog_id, String pt_id, String username)
 	{
 		//make sure we are searching on the correct backlog
-		Backlog backlog = backlogRepository.findByProjectIdentifier(backlog_id);
-		if(backlog==null)
-		{
-			throw new ProjectNotFoundException("Project with id "+backlog_id+" does not exist");
-		}
+		projectService.findProjectByIdentifier(backlog_id,username);
+		
 		//make sure task exists
 		ProjectTask projectTask = projectTaskRepository.findByProjectSequence(pt_id);
 		if(projectTask==null)
 		{
 			throw new ProjectNotFoundException("Project Task "+pt_id+" not found");
 		}
-		//make sure backlog/proj id in path matches to right proj
+		
+		//make sure backlog/project id in path matches to right project
 		if(!projectTask.getProjectIdentifier().equals(backlog_id))
 		{
 			throw new ProjectNotFoundException("Project Task "+pt_id+" does not exist in Project "+backlog_id);
@@ -93,16 +82,16 @@ public class ProjectTaskService {
 	}
 	
 	//Update Project Task
-	public ProjectTask updateByProjectSequence(ProjectTask updatedTask, String backlog_id, String pt_id) {
-		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id);
+	public ProjectTask updateByProjectSequence(ProjectTask updatedTask, String backlog_id, String pt_id, String username) {
+		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id, username);
 		projectTask = updatedTask;
 		return projectTaskRepository.save(projectTask);
 	}
 	
 	//Delete Project Task
-	public void deletePTBySequence(String backlog_id, String pt_id)
+	public void deletePTBySequence(String backlog_id, String pt_id, String username)
 	{
-		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id);
+		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id, username);
 		projectTaskRepository.delete(projectTask);
 	}
 	
