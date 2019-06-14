@@ -79,6 +79,26 @@ export const updateProjectTask = (
   }
 };
 
+export const updateProjectTaskStatus = project_task => async dispatch => {
+  try {
+    await axios.patch(
+      `/api/backlog/${project_task.projectIdentifier}/${
+        project_task.projectSequence
+      }`,
+      project_task
+    );
+    dispatch({
+      type: GET_ERRORS,
+      payload: {}
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    });
+  }
+};
+
 export const deleteProjectTask = (backlog_id, pt_id) => async dispatch => {
   if (
     window.confirm(

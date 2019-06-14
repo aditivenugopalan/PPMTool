@@ -8,6 +8,11 @@ class ProjectTask extends Component {
   onDeleteClick(backlog_id, pt_id) {
     this.props.deleteProjectTask(backlog_id, pt_id);
   }
+
+  onDragStart = (e, project_task) => {
+    e.dataTransfer.setData("project_task", JSON.stringify(project_task));
+  };
+
   render() {
     const { project_task } = this.props;
     let priorityString;
@@ -29,7 +34,11 @@ class ProjectTask extends Component {
     }
 
     return (
-      <div className="card mb-1 bg-light">
+      <div
+        className="card mb-1 bg-light"
+        draggable
+        onDragStart={e => this.onDragStart(e, project_task)}
+      >
         <div className={`card-header text-primary ${priorityClass}`}>
           ID: {project_task.projectSequence} -- Priority: {priorityString}
         </div>
