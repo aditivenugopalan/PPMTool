@@ -2,7 +2,6 @@ package com.example.ppmtool.domain;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +32,7 @@ public class ProjectTask {
 	private String status; 
 	private Integer priority;
 	@JsonFormat(pattern = "yyyy-mm-dd")
+	//@NotNull(message="Please include a due date")
 	private Date dueDate;
 	
 	//ManyToOne with Backlog

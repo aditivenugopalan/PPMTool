@@ -54,8 +54,11 @@ public class Project {
 
 
     private String projectLeader;
-
+    
+	public Project() {
 	
+	}
+
 	public User getUser() {
 		return user;
 	}
@@ -76,15 +79,9 @@ public class Project {
 	}
 
 
-	public Project() {
-		
-	}
-
-	
 	public Backlog getBacklog() {
 		return backlog;
 	}
-
 
 
 	public void setBacklog(Backlog backlog) {

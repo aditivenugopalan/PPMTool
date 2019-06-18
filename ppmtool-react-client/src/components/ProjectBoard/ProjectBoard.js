@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import Backlog from "./Backlog";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { getBacklog } from "../../actions/backlogActions";
+import { getBacklog, sortBasedOn } from "../../actions/backlogActions";
+import { Dropdown } from "react-bootstrap";
 
 class ProjectBoard extends Component {
   //constructor to handle errors
@@ -12,6 +13,12 @@ class ProjectBoard extends Component {
     this.state = {
       errors: {}
     };
+    this.onSort = this.onSort.bind(this);
+  }
+
+  async onSort(e, sortBy) {
+    const { id } = this.props.match.params;
+    this.props.sortBasedOn(id, sortBy);
   }
 
   componentDidMount() {
@@ -66,6 +73,25 @@ class ProjectBoard extends Component {
           <i className="fas fa-plus-circle"> Create Project Task</i>
         </Link>
         <br />
+
+        <Dropdown>
+          <Dropdown.Toggle variant="primary" id="dropdown-basic">
+            Sort By
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={e => this.onSort(e, "priority")}>
+              Priority
+            </Dropdown.Item>
+            <Dropdown.Item onClick={e => this.onSort(e, "duedate")}>
+              Due Date
+            </Dropdown.Item>
+            <Dropdown.Item onClick={e => this.onSort(e, "sequence")}>
+              Project Sequence
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        <br />
         <hr />
         {BoardContent}
       </div>
@@ -76,6 +102,7 @@ class ProjectBoard extends Component {
 ProjectBoard.propTypes = {
   backlog: PropTypes.object.isRequired,
   getBacklog: PropTypes.func.isRequired,
+  sortBasedOn: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired
 };
 
@@ -86,5 +113,5 @@ const mapStatetoProps = state => ({
 
 export default connect(
   mapStatetoProps,
-  { getBacklog }
+  { getBacklog, sortBasedOn }
 )(ProjectBoard);

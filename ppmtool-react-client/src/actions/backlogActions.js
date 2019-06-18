@@ -112,3 +112,15 @@ export const deleteProjectTask = (backlog_id, pt_id) => async dispatch => {
     });
   }
 };
+
+export const sortBasedOn = (backlog_id, sortBy) => async dispatch => {
+  const res = await axios.get(`/api/backlog/${backlog_id}`, {
+    params: {
+      sortBy
+    }
+  });
+  dispatch({
+    type: GET_BACKLOG,
+    payload: res.data
+  });
+};

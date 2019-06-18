@@ -11,6 +11,8 @@ import com.example.ppmtool.domain.ProjectTask;
 public interface ProjectTaskRepository extends CrudRepository<ProjectTask, Long> {
 
 	List<ProjectTask> findByProjectIdentifierOrderByPriority(String id);
+	List<ProjectTask> findByProjectIdentifierOrderByDueDate(String id);
+	List<ProjectTask> findByProjectIdentifierOrderByProjectSequence(String id);
 	
 	ProjectTask findByProjectSequence(String sequence);
 }
